@@ -1,0 +1,92 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AA0000010000000000000001 /* BuildThisPleaseExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000020000000000000001 /* BuildThisPleaseExampleApp.swift */; };
+		AA0000010000000000000002 /* ExampleRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000020000000000000002 /* ExampleRootView.swift */; };
+		AA0000010000000000000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA0000020000000000000003 /* Assets.xcassets */; };
+		AA0000010000000000000004 /* BuildThisPlease in Frameworks */ = {isa = PBXBuildFile; productRef = AA0000090000000000000001 /* BuildThisPlease */; };
+		AA0000010000000000000005 /* BuildThisPleaseExampleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000020000000000000004 /* BuildThisPleaseExampleUITests.swift */; };
+		AA0000010000000000000006 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = AA0000020000000000000008 /* Localizable.xcstrings */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AA00000A0000000000000001 = {isa = PBXContainerItemProxy; containerPortal = AA0000060000000000000001 /* Project object */; proxyType = 1; remoteGlobalIDString = AA0000050000000000000001; remoteInfo = BuildThisPleaseExample; };
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		AA0000020000000000000001 /* BuildThisPleaseExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildThisPleaseExampleApp.swift; sourceTree = "<group>"; };
+		AA0000020000000000000002 /* ExampleRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleRootView.swift; sourceTree = "<group>"; };
+		AA0000020000000000000003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AA0000020000000000000004 /* BuildThisPleaseExampleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildThisPleaseExampleUITests.swift; sourceTree = "<group>"; };
+		AA0000020000000000000005 /* Example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Example.xcconfig; sourceTree = "<group>"; };
+		AA0000020000000000000006 /* BuildThisPleaseExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = BuildThisPleaseExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000020000000000000007 /* BuildThisPleaseExampleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = BuildThisPleaseExampleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000020000000000000008 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = Localizable.xcstrings; path = ../../Sources/BuildThisPleaseUI/Resources/Localizable.xcstrings; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AA0000030000000000000001 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (AA0000010000000000000004 /* BuildThisPlease in Frameworks */,); runOnlyForDeploymentPostprocessing = 0; };
+		AA0000030000000000000002 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AA0000040000000000000001 = {isa = PBXGroup; children = (AA0000040000000000000002 /* App */, AA0000020000000000000003 /* Assets.xcassets */, AA0000020000000000000008 /* Localizable.xcstrings */, AA0000040000000000000003 /* Configuration */, AA0000040000000000000004 /* UITests */, AA0000040000000000000005 /* Products */); sourceTree = "<group>"; };
+		AA0000040000000000000002 /* App */ = {isa = PBXGroup; children = (AA0000020000000000000001, AA0000020000000000000002); path = App; sourceTree = "<group>"; };
+		AA0000040000000000000003 /* Configuration */ = {isa = PBXGroup; children = (AA0000020000000000000005,); path = Configuration; sourceTree = "<group>"; };
+		AA0000040000000000000004 /* UITests */ = {isa = PBXGroup; children = (AA0000020000000000000004,); path = UITests; sourceTree = "<group>"; };
+		AA0000040000000000000005 /* Products */ = {isa = PBXGroup; children = (AA0000020000000000000006, AA0000020000000000000007); name = Products; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AA0000050000000000000001 /* BuildThisPleaseExample */ = {isa = PBXNativeTarget; buildConfigurationList = AA0000080000000000000001; buildPhases = (AA0000030000000000000003, AA0000030000000000000001, AA0000030000000000000004); buildRules = (); dependencies = (); name = BuildThisPleaseExample; packageProductDependencies = (AA0000090000000000000001,); productName = BuildThisPleaseExample; productReference = AA0000020000000000000006; productType = "com.apple.product-type.application"; };
+		AA0000050000000000000002 /* BuildThisPleaseExampleUITests */ = {isa = PBXNativeTarget; buildConfigurationList = AA0000080000000000000002; buildPhases = (AA0000030000000000000005, AA0000030000000000000002, AA0000030000000000000006); buildRules = (); dependencies = (AA00000B0000000000000001,); name = BuildThisPleaseExampleUITests; productName = BuildThisPleaseExampleUITests; productReference = AA0000020000000000000007; productType = "com.apple.product-type.bundle.ui-testing"; };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AA0000060000000000000001 /* Project object */ = {isa = PBXProject; attributes = {BuildIndependentTargetsInParallel = 1; LastSwiftUpdateCheck = 2660; LastUpgradeCheck = 2660; TargetAttributes = {AA0000050000000000000001 = {CreatedOnToolsVersion = 26.0; }; AA0000050000000000000002 = {CreatedOnToolsVersion = 26.0; TestTargetID = AA0000050000000000000001; };};}; buildConfigurationList = AA0000080000000000000003; compatibilityVersion = "Xcode 16.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base); mainGroup = AA0000040000000000000001; minimizedProjectReferenceProxies = 1; packageReferences = (AA00000C0000000000000001 /* XCLocalSwiftPackageReference "../.." */,); preferredProjectObjectVersion = 77; productRefGroup = AA0000040000000000000005; projectDirPath = ""; projectRoot = ""; targets = (AA0000050000000000000001, AA0000050000000000000002); };
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AA0000030000000000000004 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (AA0000010000000000000003, AA0000010000000000000006 /* Localizable.xcstrings in Resources */,); runOnlyForDeploymentPostprocessing = 0; };
+		AA0000030000000000000006 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AA0000030000000000000003 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (AA0000010000000000000001, AA0000010000000000000002); runOnlyForDeploymentPostprocessing = 0; };
+		AA0000030000000000000005 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (AA0000010000000000000005,); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AA00000B0000000000000001 = {isa = PBXTargetDependency; target = AA0000050000000000000001; targetProxy = AA00000A0000000000000001; };
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		AA0000070000000000000001 = {isa = XCBuildConfiguration; baseConfigurationReference = AA0000020000000000000005; buildSettings = {ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor; CODE_SIGN_ENTITLEMENTS = Configuration/BuildThisPleaseExample.entitlements; CODE_SIGN_STYLE = Automatic; DEVELOPMENT_TEAM = ""; PRODUCT_NAME = "$(TARGET_NAME)"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG; }; name = Debug; };
+		AA0000070000000000000002 = {isa = XCBuildConfiguration; baseConfigurationReference = AA0000020000000000000005; buildSettings = {ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor; CODE_SIGN_ENTITLEMENTS = Configuration/BuildThisPleaseExampleRelease.entitlements; CODE_SIGN_STYLE = Automatic; DEVELOPMENT_TEAM = ""; PRODUCT_NAME = "$(TARGET_NAME)"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; }; name = Release; };
+		AA0000070000000000000003 = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.buildthisplease.example.uitests; PRODUCT_NAME = "$(TARGET_NAME)"; SDKROOT = iphoneos; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SWIFT_VERSION = 6.0; TARGETED_DEVICE_FAMILY = "1,2"; TEST_TARGET_NAME = BuildThisPleaseExample; }; name = Debug; };
+		AA0000070000000000000004 = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.buildthisplease.example.uitests; PRODUCT_NAME = "$(TARGET_NAME)"; SDKROOT = iphoneos; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SWIFT_VERSION = 6.0; TARGETED_DEVICE_FAMILY = "1,2"; TEST_TARGET_NAME = BuildThisPleaseExample; }; name = Release; };
+		AA0000070000000000000005 = {isa = XCBuildConfiguration; buildSettings = {CLANG_ENABLE_MODULES = YES; SWIFT_VERSION = 6.0; }; name = Debug; };
+		AA0000070000000000000006 = {isa = XCBuildConfiguration; buildSettings = {CLANG_ENABLE_MODULES = YES; SWIFT_VERSION = 6.0; }; name = Release; };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AA0000080000000000000001 = {isa = XCConfigurationList; buildConfigurations = (AA0000070000000000000001, AA0000070000000000000002); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		AA0000080000000000000002 = {isa = XCConfigurationList; buildConfigurations = (AA0000070000000000000003, AA0000070000000000000004); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		AA0000080000000000000003 = {isa = XCConfigurationList; buildConfigurations = (AA0000070000000000000005, AA0000070000000000000006); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		AA00000C0000000000000001 /* XCLocalSwiftPackageReference "../.." */ = {isa = XCLocalSwiftPackageReference; relativePath = ../..; };
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AA0000090000000000000001 /* BuildThisPlease */ = {isa = XCSwiftPackageProductDependency; package = AA00000C0000000000000001; productName = BuildThisPlease; };
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = AA0000060000000000000001 /* Project object */;
+}
