@@ -1,0 +1,136 @@
+# BuildThisPlease integration and operations guide
+
+This guide covers the path from developer signup to a verified production release.
+
+## Account and workspace lifecycle
+
+### New customer
+
+1. Visit [feedback.keinois.com](https://feedback.keinois.com) and authenticate with the email you will use for BuildThisPlease.
+2. The first visit creates a pending signup. Pending users cannot list or access projects.
+3. A platform operator approves or rejects the signup from **Platform approvals**.
+4. After approval, create a workspace. The creator becomes its owner.
+5. Create one or more projects inside that workspace.
+
+Platform operators manage signup decisions but cannot see a customer's workspace, projects, requests, conversations, installations, or exports unless that customer separately invites them.
+
+### Invited collaborator
+
+1. A workspace owner or administrator enters the collaborator's exact email in **Workspace → Collaborator invitations**.
+2. The collaborator authenticates at [feedback.keinois.com](https://feedback.keinois.com) using that same email.
+3. The dashboard shows the matching invitation before normal project access.
+4. Accepting it creates the membership. Invitations expire after 14 days and can be revoked before acceptance.
+
+An invitation is not a reusable bearer link. Matching the authenticated email is required.
+
+## Roles
+
+| Role | View projects | Manage feedback | Configure projects | Invite collaborators | Delete workspace |
+|---|---:|---:|---:|---:|---:|
+| Owner | Yes | Yes | Yes | Yes | Yes |
+| Administrator | Yes | Yes | Yes | Yes | No |
+| Viewer | Yes | No | No | No | No |
+
+Every backend operation resolves the project through the authenticated identity's workspace membership. Project IDs alone never grant access.
+
+## Project setup
+
+Creating a project generates a publishable key and can register the first App Attest identity. The complete key is shown only once. Rotated keys are also shown only once.
+
+Project settings provide:
+
+- Public behavior controls and project activation
+- Development and production App Attest identifiers
+- Transactional notification recipients
+- Publishable-key rotation
+- Email delivery status
+- Project CSV export
+
+Workspace settings provide collaborator management, complete JSON export, and workspace deletion.
+
+## App Attest environments
+
+Apple binds an App Attest key to the app identity and environment. These values must agree:
+
+1. Host app's signed Team ID
+2. Runtime bundle identifier
+3. App Attest entitlement (`development` or `production`)
+4. Identifier registered in the BuildThisPlease project
+
+| Configuration | Entitlement | SDK environment | Device |
+|---|---|---|---|
+| Simulator and previews | Unavailable | `MockBuildThisPleaseClient` | Simulator |
+| Debug against live backend | `development` | `.staging(baseURL: productionURL)` | Physical device |
+| TestFlight/App Store | `production` | `.production(baseURL: productionURL)` | Physical device |
+
+Despite its name, `.staging(baseURL:)` selects the development App Attest environment and may point at the live URL for Debug testing. The production Worker does not permit unsupported-device bypass sessions, so a Simulator must use the mock client.
+
+Common failures:
+
+- **Invalid nonce or challenge:** stale or mismatched registration request; update the SDK and retry on a physical device.
+- **Assertion signature invalid:** Team ID, bundle ID, environment, or stored App Attest key does not match the registered identity.
+- **App Attest unavailable:** the build is in Simulator or on an unsupported device while configured for production.
+- **Project identity rejected:** add the exact bundle/environment pair in Project settings.
+
+Changing the bundle identifier, Apple Team, or App Attest environment creates a different app identity. Register it before distributing that build.
+
+## Configuration and secrets
+
+The `btp_pk_…` key is publishable and can be extracted from an app binary. It therefore carries no administrative permissions. It is reasonable to supply the URL and key through build settings so every app target uses the correct project.
+
+Never store these in an app or this SDK repository:
+
+- Cloudflare API or Access credentials
+- Dashboard cookies or JWTs
+- Database credentials or exports
+- GitHub tokens
+- Apple private signing keys
+
+## Client lifetime and identity updates
+
+Create one `BuildThisPleaseClient` per project and retain it in the app dependency graph. The actor coordinates session establishment and persists installation credentials in Keychain.
+
+Initial configuration can include subscription state, RevenueCat App User ID, optional support email, and automatically detected app metadata. Call `updateSubscriptionStatus(_:)` after a subscription transition. Call `updateUserIdentity(revenueCatAppUserID:email:)` after RevenueCat login/alias changes or when the known support email changes. These values are support metadata; BuildThisPlease does not require an end-user account.
+
+## SwiftUI integration choices
+
+- `BuildThisPlease.FeedbackListView(client:)`: destination inside the host app's navigation.
+- `BuildThisPlease.StandaloneFeedbackView(client:)`: feedback interface with its own navigation stack.
+- `BuildThisPleaseFeedbackView(client:)`: lower-level embeddable UI product.
+- `BuildThisPleaseCore`: client and model layer without the interface.
+- `MockBuildThisPleaseClient`: deterministic local, preview, and Simulator testing.
+
+Apply `buildThisPleaseTheme(_:)` above the feedback view to customize accent and vote highlighting. The SDK owns and localizes its interface strings.
+
+## Xcode Cloud and CI
+
+The SDK repository is public, so no additional private-repository authorization is required. CI still needs normal access to the host app repository and signing configuration.
+
+The Release workflow should:
+
+- Resolve a tagged SDK version rather than `main`
+- Use the production App Attest entitlement
+- Select the intended bundle identifier and Apple Team
+- Supply the correct project URL and publishable key
+- Never enable a development bypass
+
+## Release checklist
+
+1. BuildThisPlease signup is approved.
+2. The developer has the intended workspace role.
+3. The project belongs to the correct workspace.
+4. Production Team ID, bundle ID, and App Attest environment are registered.
+5. Notification recipients have been reviewed.
+6. The host app resolves a tagged SDK release.
+7. The Release target contains the production App Attest entitlement.
+8. The client uses the production URL and project key.
+9. A physical-device test covers loading, creating, voting, commenting, and editing a sent message.
+10. The dashboard receives the test request and conversation.
+11. Email delivery succeeds when notifications are required.
+12. No private infrastructure credential is present in the app archive or source repository.
+
+## Data portability and deletion
+
+Project CSV export is useful for ticket-level reporting. Workspace JSON export contains the workspace's projects, members, identifiers, notification recipients, installations, tickets, comments, votes, merges, and audit events.
+
+Workspace deletion is permanent and cascades through all owned projects and feedback. Only an owner can perform it, and the exact workspace name is required. Export and verify the downloaded data before deletion.

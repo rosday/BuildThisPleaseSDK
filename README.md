@@ -1,58 +1,149 @@
 # BuildThisPlease SDK
 
-BuildThisPlease SDK is the public Swift package and SwiftUI interface used to add BuildThisPlease feedback boards to iOS apps.
+BuildThisPlease is a hosted feature-request board for Apple apps. This public Swift package provides the iOS client, localized SwiftUI interface, App Attest integration, tests, privacy manifest, and a tiny example app. The Worker, administrator dashboard, database, production configuration, and customer data remain private.
 
-This repository intentionally contains only client-side code, tests, localized resources, a privacy manifest, and a tiny example app. The BuildThisPlease Worker, administrator dashboard, database schema, production configuration, and deployment credentials remain in a separate private repository.
+## What app users can do
+
+- Browse and vote on feature requests.
+- Submit requests with an optional support email.
+- Follow requests created by their installation.
+- Exchange approved messages with the app team.
+- Read implemented requests without public vote totals.
+- Automatically translate user-written content when supported by iOS.
+
+No end-user login is required. BuildThisPlease creates an installation identity, stores its credentials in Keychain, and protects production traffic with Apple App Attest.
 
 ## Requirements
 
 - Xcode 26 or newer
 - Swift 6.2 or newer
 - iOS 17 or newer
+- A physical App Attest-capable device for live integration testing
 
-## Add the package
+## 1. Create the hosted project
 
-Add this repository as a Swift Package dependency and select the `BuildThisPlease` product. Use a tagged release rather than a branch or commit whenever possible.
+1. Open [feedback.keinois.com](https://feedback.keinois.com).
+2. Authenticate through Cloudflare Access.
+3. On a new account, wait for the platform operator to approve the signup. An invitation to an existing workspace can also grant access.
+4. Create a workspace. A workspace owns projects, collaborators, and exported data.
+5. Create a project and enter its name, slug, Apple Team ID, bundle identifier, App Attest environment, and optional notification email.
+6. Copy the generated `btp_pk_…` publishable key. It is shown in full only once.
+
+For Debug and App Store builds of the same bundle, register two App identifiers in **Project settings**:
+
+| Build | Team ID | Bundle ID | App Attest environment |
+|---|---|---|---|
+| Debug on a physical device | Your Apple Team ID | Exact Debug bundle ID | `development` |
+| TestFlight/App Store | Your Apple Team ID | Exact Release bundle ID | `production` |
+
+The publishable project key and API URL identify the mobile project; they are not administrator credentials. Never put Cloudflare credentials, dashboard cookies, deployment tokens, database credentials, or private backend source in an app.
+
+## 2. Add the Swift package
+
+In Xcode, choose **File → Add Package Dependencies…** and use:
+
+```text
+https://github.com/rosday/BuildThisPleaseSDK
+```
+
+Select the `BuildThisPlease` product and a tagged version such as `0.1.0` or newer. Because the package is public, developers and Xcode Cloud do not need access to the private backend repository.
+
+## 3. Enable App Attest
+
+Add the App Attest capability to the host target. Confirm the generated entitlements use `development` for Debug and `production` for Release/TestFlight:
+
+```xml
+<key>com.apple.developer.devicecheck.appattest-environment</key>
+<string>development</string>
+```
+
+The value must match the App identifier registered in the BuildThisPlease dashboard.
+
+App Attest is unavailable in the Simulator. Use `MockBuildThisPleaseClient` for Simulator development and previews. Validate the live service on a physical device before release.
+
+## 4. Configure the client
+
+Create one long-lived client for the app rather than recreating it whenever the view appears:
 
 ```swift
 import BuildThisPlease
 import SwiftUI
 
+let baseURL = URL(string: "https://feedback.keinois.com")!
+
+let environment: BuildThisPleaseConfiguration.Environment = {
+    #if DEBUG
+    // Uses Apple's development App Attest environment against the live service.
+    return .staging(baseURL: baseURL)
+    #else
+    return .production(baseURL: baseURL)
+    #endif
+}()
+
 let configuration = try BuildThisPleaseConfiguration(
     projectKey: "btp_pk_your_publishable_project_key",
-    environment: .production(
-        baseURL: URL(string: "https://feedback.example.com")!
-    ),
+    environment: environment,
     subscriptionStatus: isTrial ? .trial : (isPro ? .pro : .free),
     revenueCatAppUserID: currentRevenueCatAppUserID,
     userEmail: signedInEmail
 )
 
 let feedbackClient = BuildThisPleaseClient(configuration: configuration)
+```
 
+`.staging(baseURL:)` selects the `development` App Attest environment; it does not require a separate staging server. Production still rejects Simulator bypass sessions. Release builds must use `.production(baseURL:)`.
+
+`revenueCatAppUserID` and `userEmail` are optional support context. Pass only data your app is permitted to share. When subscription or identity information changes, update the existing client:
+
+```swift
+try await feedbackClient.updateSubscriptionStatus(.pro)
+try await feedbackClient.updateUserIdentity(
+    revenueCatAppUserID: Purchases.shared.appUserID,
+    email: currentEmail
+)
+```
+
+## 5. Add the SwiftUI destination
+
+`FeedbackListView` is designed for an existing app menu and `NavigationStack`:
+
+```swift
 struct SettingsMenu: View {
+    let feedbackClient: BuildThisPleaseClient
+
     var body: some View {
-        NavigationStack {
-            List {
-                NavigationLink {
-                    BuildThisPlease.FeedbackListView(client: feedbackClient)
-                } label: {
-                    Label("Feature requests", systemImage: "lightbulb")
-                }
+        List {
+            NavigationLink {
+                BuildThisPlease.FeedbackListView(client: feedbackClient)
+                    .buildThisPleaseTheme(.init(accent: .blue))
+            } label: {
+                Label("Feature requests", systemImage: "lightbulb")
             }
-            .navigationTitle("Settings")
         }
+        .navigationTitle("Settings")
     }
 }
 ```
 
-`FeedbackListView` is designed to be pushed inside the host app's existing `NavigationStack`. Use `BuildThisPlease.StandaloneFeedbackView(client:)` when the feedback interface needs its own navigation container.
+Use `BuildThisPlease.StandaloneFeedbackView(client:)` when BuildThisPlease must own its own `NavigationStack`.
 
-The project key and base URL identify the public mobile API and are not secrets. Never place Cloudflare credentials, administrator credentials, deployment tokens, or database credentials in an app or this package. Production mutations are protected by project scoping, App Attest, rate limits, and server-side authorization.
+Customize the accent and voted state without forking the SDK:
 
-Each host app must have its Apple Team ID, bundle identifier, and App Attest environment registered in its corresponding BuildThisPlease project before production distribution.
+```swift
+.buildThisPleaseTheme(.init(accent: .indigo, voteHighlight: .mint))
+```
 
-## Verification
+## 6. Verify before release
+
+- The dashboard contains the exact Release Team ID and bundle identifier.
+- The Release entitlement uses the `production` App Attest environment.
+- The app uses `.production(baseURL: URL(string: "https://feedback.keinois.com")!)`.
+- The app contains the correct publishable project key.
+- A physical-device build can load, submit, vote, and reply.
+- Notification recipients are correct in Project settings.
+- No administrator or Cloudflare credentials are present in the app.
+
+Run the package and example checks locally:
 
 ```bash
 swift test
@@ -66,6 +157,16 @@ xcodebuild \
   build
 ```
 
-## Access
+## Dashboard operations
 
-The repository is public so developers and CI systems can resolve tagged releases without access to the private backend repository. The publishable project key identifies a project but is not an administrator credential. Dashboard access, workspace membership, App Attest validation, database access, Cloudflare configuration, and all backend source remain server-side.
+- Platform approval allows a developer to use BuildThisPlease but does not expose any customer workspace.
+- Workspace invitations are bound to the invited email and grant access only after that identity authenticates and accepts.
+- Workspace owners can invite administrators or read-only viewers.
+- Workspace owners can export their data as JSON.
+- Workspace deletion permanently removes every project and its feedback after exact-name confirmation. Export first.
+
+For troubleshooting, CI, direct API usage, and an expanded launch checklist, see the [Integration guide](Documentation/Integration.md). Coding agents should also follow [AGENTS.md](AGENTS.md).
+
+## Repository boundary
+
+This repository intentionally contains only client-side code. Its example app is not included in the Swift package products and does not ship inside host applications. The private BuildThisPlease backend contains dashboard authorization, application-level tenant isolation, database migrations, deployment configuration, and production infrastructure.
