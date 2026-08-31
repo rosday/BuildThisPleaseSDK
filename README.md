@@ -1,6 +1,6 @@
 # BuildThisPlease SDK
 
-BuildThisPlease SDK is the private Swift package and SwiftUI interface used to add BuildThisPlease feedback boards to iOS apps.
+BuildThisPlease SDK is the public Swift package and SwiftUI interface used to add BuildThisPlease feedback boards to iOS apps.
 
 This repository intentionally contains only client-side code, tests, localized resources, a privacy manifest, and a tiny example app. The BuildThisPlease Worker, administrator dashboard, database schema, production configuration, and deployment credentials remain in a separate private repository.
 
@@ -12,7 +12,7 @@ This repository intentionally contains only client-side code, tests, localized r
 
 ## Add the package
 
-Add this private repository as a Swift Package dependency and select the `BuildThisPlease` product. Use a tagged release rather than a branch or commit whenever possible.
+Add this repository as a Swift Package dependency and select the `BuildThisPlease` product. Use a tagged release rather than a branch or commit whenever possible.
 
 ```swift
 import BuildThisPlease
@@ -68,4 +68,4 @@ xcodebuild \
 
 ## Access
 
-The repository is private. Developers and CI systems need read access to resolve it. Do not redistribute its source or grant repository access beyond the people and systems that build an authorized host app.
+The repository is public so developers and CI systems can resolve tagged releases without access to the private backend repository. The publishable project key identifies a project but is not an administrator credential. Dashboard access, workspace membership, App Attest validation, database access, Cloudflare configuration, and all backend source remain server-side.
