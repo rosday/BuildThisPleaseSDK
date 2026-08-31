@@ -22,6 +22,20 @@ No end-user login is required. BuildThisPlease creates an installation identity,
 
 ## 1. Create the hosted project
 
+### Agent-assisted setup
+
+After signup approval and workspace creation, open **AI agent** in the dashboard and copy the remote MCP endpoint:
+
+```text
+https://mcp.feedback.keinois.com/mcp
+```
+
+Connect it in a compatible coding agent, approve only the permissions you want it to have, then ask it to run `setup_buildthisplease_for_current_repository`. The agent will inspect the local Xcode project for the app name, target, scheme, Team ID, bundle identifiers, and App Attest environments. It then creates an immutable setup proposal and stops.
+
+Open the returned dashboard approval URL, review every value and proposed local edit, and approve or reject it yourself. Only after approval can the same agent connection create the hosted project and receive its project-scoped publishable key. The agent never needs Cloudflare credentials, dashboard cookies, backend source, signing keys, or provisioning profiles.
+
+### Manual setup
+
 1. Open [feedback.keinois.com](https://feedback.keinois.com).
 2. Authenticate through Cloudflare Access.
 3. On a new account, wait for the platform operator to approve the signup. An invitation to an existing workspace can also grant access.

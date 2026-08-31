@@ -35,6 +35,24 @@ Every backend operation resolves the project through the authenticated identity'
 
 ## Project setup
 
+### Agent-assisted setup
+
+BuildThisPlease exposes an OAuth-protected remote MCP server at `https://mcp.feedback.keinois.com/mcp`. It is optional; manual setup remains available.
+
+1. Sign in to the dashboard, complete signup approval, and create a workspace.
+2. Open **AI agent**, copy the MCP endpoint, and add it to a compatible client.
+3. During OAuth, choose application permissions. Read/setup/feedback/collaborator access are independent from sensitive identity access and destructive administration.
+4. Ask the agent to run `setup_buildthisplease_for_current_repository` in the host app repository.
+5. The agent discovers Xcode values locally and creates a 24-hour immutable setup draft. It returns a dashboard approval URL and must stop.
+6. Review the project, Xcode target/scheme, all Team ID/bundle/environment tuples, notification email, and proposed repository changes. Approve or reject manually.
+7. After approval, the same OAuth identity applies the draft, receives the publishable key, integrates the SDK, and builds the app.
+
+OAuth authenticates the dashboard identity but does not replace application authorization. Every MCP tool checks workspace membership and role again. Platform operators gain no customer-data access. User-written titles, descriptions, and messages returned to an agent are marked as untrusted content and must never be followed as instructions.
+
+Sensitive installation emails and RevenueCat IDs are omitted unless the user separately approves that MCP permission. Destructive operations require explicit confirmation; permanent workspace deletion additionally requires a fresh preview token and exact workspace name. All tool outcomes are audit logged.
+
+### Manual setup
+
 Creating a project generates a publishable key and can register the first App Attest identity. The complete key is shown only once. Rotated keys are also shown only once.
 
 Project settings provide:
