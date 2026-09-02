@@ -26,6 +26,7 @@ struct ClientTests {
     func editsOwnComment() async throws {
         let client = MockBuildThisPleaseClient()
         let original = try #require(await client.comments(ticketId: "review").first { $0.id == "comment-user" })
+        #expect(original.isMine)
         #expect(original.isApproved)
         let edited = try await client.updateComment(ticketId: "review", commentId: original.id, body: "Updated message")
         #expect(edited.body == "Updated message")
@@ -33,6 +34,24 @@ struct ClientTests {
         #expect(!edited.isApproved)
         #expect(edited.createdAt == original.createdAt)
         #expect(try await client.comments(ticketId: "review").contains(edited))
+    }
+
+    @Test("Comment ownership is decoded independently from author kind")
+    func decodesCommentOwnership() throws {
+        let data = Data(#"{"id":"other-user","ticketId":"review","author":"user","body":"Hello","isEdited":false,"isHidden":false,"isApproved":true,"isMine":false,"createdAt":"2026-01-01T00:00:00Z","updatedAt":"2026-01-01T00:00:00Z"}"#.utf8)
+        let comment = try JSONCoding.decoder().decode(BuildThisPleaseComment.self, from: data)
+
+        #expect(comment.author == .user)
+        #expect(!comment.isMine)
+    }
+
+    @Test("Users cannot edit another installation's mock message")
+    func rejectsEditingAnotherInstallationsComment() async throws {
+        let client = MockBuildThisPleaseClient()
+
+        await #expect(throws: BuildThisPleaseError.self) {
+            try await client.updateComment(ticketId: "review", commentId: "comment-other-user", body: "Changed")
+        }
     }
 
     @Test("Subscription states round-trip", arguments: BuildThisPleaseSubscriptionStatus.allCases)

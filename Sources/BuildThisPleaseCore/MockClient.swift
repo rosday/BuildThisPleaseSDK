@@ -48,14 +48,14 @@ public actor MockBuildThisPleaseClient: BuildThisPleaseClientProtocol {
     public func createTicket(title: String, description: String, idempotencyKey: String) async throws -> BuildThisPleaseTicket { try await createTicket(title: title, description: description, email: nil, idempotencyKey: idempotencyKey) }
     public func createTicket(title: String, description: String, email: String?, idempotencyKey: String) async throws -> BuildThisPleaseTicket { try await prepare(); let value = BuildThisPleaseTicket(id: UUID().uuidString, title: title, description: description, status: .pending); allTickets.insert(value, at: 0); return value }
     public func setVote(ticketId: String, voted: Bool) async throws -> BuildThisPleaseTicket { try await prepare(); guard let index = allTickets.firstIndex(where: { $0.id == ticketId }) else { throw BuildThisPleaseError.invalidResponse }; let old = allTickets[index]; let value = BuildThisPleaseTicket(id: old.id, title: old.title, description: old.description, status: old.status, commentsLocked: old.commentsLocked, createdAt: old.createdAt, updatedAt: .now, implementedAt: old.implementedAt, implementedAppVersion: old.implementedAppVersion, implementationNote: old.implementationNote, voteCount: max(0, (old.voteCount ?? 0) + (voted ? 1 : -1)), hasVoted: voted); allTickets[index] = value; return value }
-    public func createComment(ticketId: String, body: String, idempotencyKey: String) async throws -> BuildThisPleaseComment { try await prepare(); let value = BuildThisPleaseComment(id: UUID().uuidString, ticketId: ticketId, author: .user, body: body, isEdited: false, isHidden: false, isApproved: false, createdAt: .now, updatedAt: .now); commentsByTicket[ticketId, default: []].append(value); return value }
+    public func createComment(ticketId: String, body: String, idempotencyKey: String) async throws -> BuildThisPleaseComment { try await prepare(); let value = BuildThisPleaseComment(id: UUID().uuidString, ticketId: ticketId, author: .user, body: body, isEdited: false, isHidden: false, isApproved: false, isMine: true, createdAt: .now, updatedAt: .now); commentsByTicket[ticketId, default: []].append(value); return value }
     public func updateComment(ticketId: String, commentId: String, body: String) async throws -> BuildThisPleaseComment {
         try await prepare()
-        guard let index = commentsByTicket[ticketId]?.firstIndex(where: { $0.id == commentId && $0.author == .user && !$0.isHidden }) else {
+        guard let index = commentsByTicket[ticketId]?.firstIndex(where: { $0.id == commentId && $0.isMine && !$0.isHidden }) else {
             throw BuildThisPleaseError.server(code: "comment_not_editable", message: "This message cannot be edited.", status: 403)
         }
         let old = commentsByTicket[ticketId]![index]
-        let updated = BuildThisPleaseComment(id: old.id, ticketId: old.ticketId, author: old.author, body: body, isEdited: true, isHidden: false, isApproved: false, createdAt: old.createdAt, updatedAt: .now)
+        let updated = BuildThisPleaseComment(id: old.id, ticketId: old.ticketId, author: old.author, body: body, isEdited: true, isHidden: false, isApproved: false, isMine: old.isMine, createdAt: old.createdAt, updatedAt: .now)
         commentsByTicket[ticketId]![index] = updated
         return updated
     }
@@ -84,9 +84,10 @@ public actor MockBuildThisPleaseClient: BuildThisPleaseClientProtocol {
 
     public static let sampleComments: [String: [BuildThisPleaseComment]] = [
         "review": [
-            .init(id: "comment-user", ticketId: "review", author: .user, body: "A filter for planned work would help.", isEdited: true, isHidden: false, createdAt: .now.addingTimeInterval(-3_600), updatedAt: .now),
+            .init(id: "comment-user", ticketId: "review", author: .user, body: "A filter for planned work would help.", isEdited: true, isHidden: false, isMine: true, createdAt: .now.addingTimeInterval(-3_600), updatedAt: .now),
             .init(id: "comment-admin", ticketId: "review", author: .administrator, body: "That is now part of the design.", isEdited: false, isHidden: false, createdAt: .now.addingTimeInterval(-1_800), updatedAt: .now),
-            .init(id: "comment-hidden", ticketId: "review", author: .user, body: nil, isEdited: false, isHidden: true, createdAt: .now.addingTimeInterval(-900), updatedAt: .now)
+            .init(id: "comment-other-user", ticketId: "review", author: .user, body: "I would use this too.", isEdited: false, isHidden: false, createdAt: .now.addingTimeInterval(-1_200), updatedAt: .now),
+            .init(id: "comment-hidden", ticketId: "review", author: .user, body: nil, isEdited: false, isHidden: true, isMine: true, createdAt: .now.addingTimeInterval(-900), updatedAt: .now)
         ]
     ]
 }

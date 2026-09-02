@@ -124,7 +124,7 @@ struct ExampleRootView: View {
                     }
                 }
         }
-        .navigationTitle("BuildThisPlease")
+        .navigationTitle("Build This Please")
     }
 
     private func configuredURL(for mode: ExampleMode) -> URL? {

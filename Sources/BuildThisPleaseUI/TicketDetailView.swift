@@ -374,7 +374,7 @@ private struct CommentBubble: View {
         HStack(alignment: .bottom, spacing: 10) {
             if isMine { Spacer(minLength: 52) }
             VStack(alignment: isMine ? .trailing : .leading, spacing: 5) {
-                Text(comment.author == .administrator ? String(localized: "Team", bundle: .module) : String(localized: "You", bundle: .module))
+                Text(authorLabel)
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 17)
@@ -385,7 +385,7 @@ private struct CommentBubble: View {
                     .padding(.vertical, 10)
                     .background(bubbleColor, in: .rect(cornerRadius: 17, style: .continuous))
                     .accessibilityLabel(
-                        "\(comment.author == .administrator ? String(localized: "Team", bundle: .module) : String(localized: "You", bundle: .module)), \(displayedBody)"
+                        "\(authorLabel), \(displayedBody)"
                     )
                 HStack(spacing: 5) {
                     Text(comment.createdAt, format: .dateTime.month(.abbreviated).day().hour().minute())
@@ -414,7 +414,13 @@ private struct CommentBubble: View {
         .buildThisPleaseTranslatable(state: $translation, texts: translatableTexts)
     }
 
-    private var isMine: Bool { comment.author == .user }
+    private var isMine: Bool { comment.isMine }
+    private var authorLabel: String {
+        if comment.author == .administrator { return String(localized: "Team", bundle: .module) }
+        return isMine
+            ? String(localized: "You", bundle: .module)
+            : String(localized: "User", bundle: .module)
+    }
     private var originalBody: String { comment.body ?? "" }
     private var translatableTexts: [String] { comment.isHidden ? [] : [originalBody] }
     private var displayedBody: String {

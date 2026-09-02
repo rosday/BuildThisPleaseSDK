@@ -83,17 +83,18 @@ public struct BuildThisPleaseComment: Codable, Identifiable, Hashable, Sendable 
     public let isEdited: Bool
     public let isHidden: Bool
     public let isApproved: Bool
+    public let isMine: Bool
     public let createdAt: Date
     public let updatedAt: Date
 
-    public init(id: String, ticketId: String, author: Author, body: String?, isEdited: Bool, isHidden: Bool, isApproved: Bool = true, createdAt: Date, updatedAt: Date) {
+    public init(id: String, ticketId: String, author: Author, body: String?, isEdited: Bool, isHidden: Bool, isApproved: Bool = true, isMine: Bool = false, createdAt: Date, updatedAt: Date) {
         self.id = id; self.ticketId = ticketId; self.author = author; self.body = body
-        self.isEdited = isEdited; self.isHidden = isHidden; self.isApproved = isApproved
+        self.isEdited = isEdited; self.isHidden = isHidden; self.isApproved = isApproved; self.isMine = isMine
         self.createdAt = createdAt; self.updatedAt = updatedAt
     }
 
     private enum CodingKeys: String, CodingKey {
-        case id, ticketId, author, body, isEdited, isHidden, isApproved, createdAt, updatedAt
+        case id, ticketId, author, body, isEdited, isHidden, isApproved, isMine, createdAt, updatedAt
     }
 
     public init(from decoder: Decoder) throws {
@@ -105,6 +106,7 @@ public struct BuildThisPleaseComment: Codable, Identifiable, Hashable, Sendable 
         isEdited = try values.decode(Bool.self, forKey: .isEdited)
         isHidden = try values.decode(Bool.self, forKey: .isHidden)
         isApproved = try values.decodeIfPresent(Bool.self, forKey: .isApproved) ?? true
+        isMine = try values.decodeIfPresent(Bool.self, forKey: .isMine) ?? false
         createdAt = try values.decode(Date.self, forKey: .createdAt)
         updatedAt = try values.decode(Date.self, forKey: .updatedAt)
     }
