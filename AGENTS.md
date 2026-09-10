@@ -59,7 +59,7 @@ Never bypass the setup draft by creating a project with another tool. Never infe
 
 ## Required verification
 
-For SDK changes, run:
+For SDK source or build-configuration changes, run the checks below. Prose-only edits need content/link checks instead; retain live-device verification when claiming production readiness.
 
 ```bash
 swift test

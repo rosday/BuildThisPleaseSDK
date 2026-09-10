@@ -70,10 +70,12 @@ struct ExampleRootView: View {
                 NavigationStack {
                     BuildThisPlease.FeedbackListView(client: client)
                         .buildThisPleaseTheme(.init())
+                        .modifier(ExampleSoftScrollEdges())
                 }
             } else {
                 NavigationStack {
                     menu
+                        .modifier(ExampleSoftScrollEdges())
                 }
             }
         }
@@ -113,6 +115,7 @@ struct ExampleRootView: View {
                             BuildThisPlease.FeedbackListView(client: client)
                                 .id("\(mode.rawValue)-\(scenario.rawValue)-\(subscription.rawValue)-\(resetToken)")
                                 .buildThisPleaseTheme(.init())
+                                .modifier(ExampleSoftScrollEdges())
                         } label: {
                             Label("Feature requests", systemImage: "lightbulb")
                         }
@@ -181,6 +184,7 @@ private struct DeveloperMenu: View {
                 }
             }
             .navigationTitle("Example controls")
+            .modifier(ExampleSoftScrollEdges())
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
         }
     }
