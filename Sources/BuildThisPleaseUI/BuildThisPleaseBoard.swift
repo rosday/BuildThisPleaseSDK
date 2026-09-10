@@ -258,7 +258,12 @@ private struct WorkfieldTabs: View {
                 .pickerStyle(.menu)
                 .frame(maxWidth: .infinity, alignment: .leading)
             } else {
-                if #available(iOS 26, macOS 26, *) {
+                if usesNativeSegmentedBackground {
+                    Picker(String(localized: "Request list", bundle: .module), selection: $selection) {
+                        sectionLabels
+                    }
+                    .pickerStyle(.segmented)
+                } else if #available(iOS 26, macOS 26, *) {
                     Picker(String(localized: "Request list", bundle: .module), selection: $selection) {
                         sectionLabels
                     }
@@ -280,6 +285,15 @@ private struct WorkfieldTabs: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
         .accessibilityLabel(String(localized: "Request list", bundle: .module))
+    }
+
+    private var usesNativeSegmentedBackground: Bool {
+        #if os(iOS)
+        if #available(iOS 27, *) {
+            return true
+        }
+        #endif
+        return false
     }
 
     @ViewBuilder private var sectionLabels: some View {
