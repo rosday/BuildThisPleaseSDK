@@ -60,7 +60,7 @@ In Xcode, choose **File → Add Package Dependencies…** and use:
 https://github.com/rosday/BuildThisPleaseSDK
 ```
 
-Select the `BuildThisPlease` product and a tagged version such as `0.1.0` or newer. Because the package is public, developers and Xcode Cloud do not need access to the private backend repository.
+Select the `BuildThisPlease` product and a tagged version such as `0.1.3` or newer. Because the package is public, developers and Xcode Cloud do not need access to the private backend repository.
 
 ## 3. Enable App Attest
 
@@ -184,3 +184,5 @@ For troubleshooting, CI, direct API usage, and an expanded launch checklist, see
 ## Repository boundary
 
 This repository intentionally contains only client-side code. Its example app is not included in the Swift package products and does not ship inside host applications. The private BuildThisPlease backend contains dashboard authorization, application-level tenant isolation, database migrations, deployment configuration, and production infrastructure.
+
+Each submitted request includes the host app version as private backend metadata. The version is captured from the SDK configuration (which defaults to the host app version) and is not included in public request responses.

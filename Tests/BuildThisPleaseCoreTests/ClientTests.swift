@@ -4,6 +4,24 @@ import Testing
 
 @Suite("BuildThisPlease client contract")
 struct ClientTests {
+    @Test("Ticket submission sends the host app version", arguments: ["2.4.1", nil] as [String?])
+    func submitsAppVersion(appVersion: String?) async throws {
+        let transport = TicketVersionTransport()
+        let configuration = try BuildThisPleaseConfiguration(
+            projectKey: "btp_pk_version_fixture",
+            environment: .local(baseURL: URL(string: "http://feedback.example.test")!),
+            bundleIdentifier: "com.example.host",
+            appVersion: appVersion
+        )
+        let client = BuildThisPleaseClient(configuration: configuration, transport: transport,
+            credentialStore: InMemoryBuildThisPleaseCredentialStore(), attestationProvider: UnsupportedAttestationProvider())
+        _ = try await client.createTicket(title: "Version context", description: "Capture the host version.")
+        let data = try #require(await transport.ticketBody)
+        let payload = try #require(JSONSerialization.jsonObject(with: data) as? [String: String])
+        #expect(payload["appVersion"] == appVersion)
+        #expect(payload["title"] == "Version context")
+    }
+
     @Test("Implemented models omit vote data")
     func implementedOmitsVoteData() async throws {
         let client = MockBuildThisPleaseClient()
@@ -299,5 +317,20 @@ private actor InvalidLocalRecoveryTransport: BuildThisPleaseTransport {
         }
         let response = HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: nil, headerFields: nil)!
         return (Data(body.utf8), response)
+    }
+}
+
+private actor TicketVersionTransport: BuildThisPleaseTransport {
+    private(set) var ticketBody: Data?
+
+    func send(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        let body: String
+        if request.url!.path == "/v1/development/sessions" {
+            body = #"{"installationId":"version-installation","sessionToken":"version-session","expiresAt":"2099-01-01T00:00:00Z"}"#
+        } else {
+            ticketBody = request.httpBody
+            body = #"{"ticket":{"id":"version-ticket","title":"Version context","description":"Capture the host version.","status":"pending","commentsLocked":false,"createdAt":"2026-01-01T00:00:00Z","updatedAt":"2026-01-01T00:00:00Z"}}"#
+        }
+        return (Data(body.utf8), HTTPURLResponse(url: request.url!, statusCode: 201, httpVersion: nil, headerFields: nil)!)
     }
 }

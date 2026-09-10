@@ -32,7 +32,7 @@ public actor BuildThisPleaseClient: BuildThisPleaseClientProtocol {
     private struct RegistrationBody: Encodable { let challengeId: String; let keyId: String; let attestationObject: String }
     private struct RecoveryChallengeBody: Encodable { let keyId: String }
     private struct RecoveryBody: Encodable { let challengeId: String; let keyId: String; let assertionObject: String }
-    private struct TicketBody: Encodable { let title: String; let description: String; let email: String? }
+    private struct TicketBody: Encodable { let title: String; let description: String; let email: String?; let appVersion: String? }
     private struct CommentBody: Encodable { let body: String }
     private struct SubscriptionBody: Encodable { let status: BuildThisPleaseSubscriptionStatus; let observedAt: Date }
     private struct UserIdentityBody: Encodable {
@@ -116,7 +116,7 @@ public actor BuildThisPleaseClient: BuildThisPleaseClientProtocol {
     }
 
     public func createTicket(title: String, description: String, email: String?, idempotencyKey: String = UUID().uuidString) async throws -> BuildThisPleaseTicket {
-        let envelope: TicketEnvelope = try await mutate("POST", path: "/v1/tickets", body: TicketBody(title: title, description: description, email: Self.normalizedOptional(email)?.lowercased()), idempotencyKey: idempotencyKey)
+        let envelope: TicketEnvelope = try await mutate("POST", path: "/v1/tickets", body: TicketBody(title: title, description: description, email: Self.normalizedOptional(email)?.lowercased(), appVersion: Self.normalizedOptional(config.appVersion)), idempotencyKey: idempotencyKey)
         return envelope.ticket
     }
 
