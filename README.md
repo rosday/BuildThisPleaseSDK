@@ -62,7 +62,7 @@ In Xcode, choose **File → Add Package Dependencies…** and use:
 https://github.com/rosday/BuildThisPleaseSDK
 ```
 
-Select the `BuildThisPlease` product and a tagged version such as `0.1.3` or newer. Because the package is public, developers and Xcode Cloud do not need access to the private backend repository.
+Select the `BuildThisPlease` product and a tagged version such as `0.1.4` or newer. Because the package is public, developers and Xcode Cloud do not need access to the private backend repository.
 
 ## 3. Enable App Attest
 
