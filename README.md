@@ -11,6 +11,8 @@ BuildThisPlease is a hosted feature-request board for Apple apps. This public Sw
 - Read implemented requests without public vote totals.
 - Automatically translate user-written content when supported by iOS.
 
+On iOS 18 and newer, translation starts for loaded requests at the feedback screen level, including offscreen rows and request details. Conversation messages are queued as soon as they load. The SDK batches work by source language and shares completed translations between screens. Translations are cached in the app's caches directory for up to 30 days, with limits of 500 entries and 2 MiB on disk. Cache keys include the exact text and both source and target languages, so edits and language changes require fresh results. The system may remove cached files. First-time translation can still require a language download; users can always choose **Show original**.
+
 No end-user login is required. BuildThisPlease creates an installation identity, stores its credentials in Keychain, and protects production traffic with Apple App Attest.
 
 ## Requirements

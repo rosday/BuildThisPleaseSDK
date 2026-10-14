@@ -60,6 +60,7 @@ public struct BuildThisPleaseFeedbackView: View {
             }
         }
         .task { await model.load() }
+        .buildThisPleasePretranslate((model.currentTickets + model.requests + model.mine + model.implemented).translationTextGroups)
         .sheet(isPresented: $model.presentsCreate) {
             CreateTicketView(client: model.client) { ticket in
                 model.created(ticket)
@@ -153,10 +154,7 @@ private struct TicketCollection: View {
 
     private var containsTranslatableContent: Bool {
         model.currentTickets.contains { ticket in
-            DynamicTranslationState.shouldOffer(for: [
-                ticket.title,
-                ticket.implementationNote ?? ticket.description
-            ])
+            DynamicTranslationState.shouldOffer(for: ticket.cardTranslationTexts)
         }
     }
 }
@@ -426,7 +424,7 @@ private struct FeedbackTicketCard: View {
     private var cardContent: some View {
         VStack(alignment: .leading, spacing: 3) {
             HStack(alignment: .top, spacing: 8) {
-                Text(translation.text(at: 0, original: ticket.title))
+                Text(translation.text(at: 0, original: ticket.title, texts: translatableTexts))
                     .font(.body.weight(.semibold))
                     .multilineTextAlignment(.leading)
                     .lineLimit(nil)
@@ -439,7 +437,7 @@ private struct FeedbackTicketCard: View {
                         .offset(x: 2, y: 0)
                 }
             }
-            Text(translation.text(at: 1, original: detailText))
+            Text(translation.text(at: 1, original: detailText, texts: translatableTexts))
                 .font(.callout)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.leading)
@@ -455,15 +453,15 @@ private struct FeedbackTicketCard: View {
 
     private var accessibilityText: String {
         [
-            translation.text(at: 0, original: ticket.title),
+            translation.text(at: 0, original: ticket.title, texts: translatableTexts),
             ticket.status.displayName,
-            translation.text(at: 1, original: detailText)
+            translation.text(at: 1, original: detailText, texts: translatableTexts)
         ]
             .joined(separator: ", ")
     }
 
     private var detailText: String { ticket.implementationNote ?? ticket.description }
-    private var translatableTexts: [String] { [ticket.title, detailText] }
+    private var translatableTexts: [String] { ticket.cardTranslationTexts }
 }
 
 private struct ErrorBanner: View {

@@ -1,9 +1,42 @@
+import BuildThisPleaseCore
 import Foundation
 import Testing
 @testable import BuildThisPleaseUI
 
 @Suite("Dynamic translation")
+@MainActor
 struct DynamicTranslationTests {
+    @Test("A canceled worker ending cannot clear its replacement's activity")
+    func replacementWorkerOwnership() {
+        var activity = TranslationWorkerActivity()
+        let old = activity.begin()
+        let replacement = activity.begin()
+        activity.end(old)
+        #expect(activity.taskID == replacement)
+        activity.end(replacement)
+        #expect(activity.taskID == nil)
+    }
+
+    @Test("Preloading covers the exact card and detail groups when their source languages differ")
+    func preloadUsesRenderedGroups() {
+        let ticket = BuildThisPleaseTicket(
+            id: "implemented",
+            title: "Export",
+            description: "Please let us export all of our saved requests to a file. This would make it much easier to keep a backup, read them on another device, and share our feedback with other members of the team.",
+            status: .implemented,
+            implementationNote: "Ahora puedes exportar todas tus solicitudes. Guarda una copia y compártela con tu equipo."
+        )
+        #expect(DynamicTranslationState.sourceLanguage(for: ticket.cardTranslationTexts) == "es")
+        #expect(DynamicTranslationState.sourceLanguage(for: ticket.detailTranslationTexts) == "en")
+        let groups = [ticket, ticket].translationTextGroups
+        #expect(groups == [ticket.cardTranslationTexts, ticket.detailTranslationTexts])
+        let forEnglish = groups.filter {
+            guard let source = DynamicTranslationState.sourceLanguage(for: $0) else { return false }
+            return DynamicTranslationState.languagesDiffer(sourceIdentifier: source, target: Locale.Language(identifier: "en"))
+        }
+        #expect(forEnglish == [ticket.cardTranslationTexts])
+    }
+
     @Test("Language comparison ignores regions but preserves Chinese scripts")
     func languageComparison() {
         #expect(!DynamicTranslationState.languagesDiffer(

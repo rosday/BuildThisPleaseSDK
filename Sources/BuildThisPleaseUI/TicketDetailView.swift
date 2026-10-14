@@ -58,10 +58,17 @@ struct TicketDetailView: View {
             }
         }
         .background(BuildThisPleaseSurface.canvas)
-        .navigationTitle(ticketTranslation.text(at: 0, original: model.ticket.title))
+        .navigationTitle(ticketTranslation.text(at: 0, original: model.ticket.title, texts: ticketTexts))
         .buildThisPleaseInlineTitle()
         .refreshable { await model.load() }
         .task { await model.load() }
+        .buildThisPleasePretranslate(
+            [ticketTexts]
+                + model.comments.compactMap { comment in
+                    guard !comment.isHidden, let body = comment.body else { return nil }
+                    return [body]
+                }
+        )
         .onAppear(perform: resetKeyboardState)
         .onDisappear(perform: resetKeyboardState)
         .sheet(item: $model.editingComment) { comment in
@@ -91,8 +98,6 @@ struct TicketDetailView: View {
     }
 
     private var hasTranslatableContent: Bool {
-        let ticketTexts = [model.ticket.title, model.ticket.description]
-            + (model.ticket.implementationNote.map { [$0] } ?? [])
         if DynamicTranslationState.shouldOffer(for: ticketTexts) {
             return true
         }
@@ -101,6 +106,10 @@ struct TicketDetailView: View {
             guard !comment.isHidden, let body = comment.body else { return false }
             return DynamicTranslationState.shouldOffer(for: [body])
         }
+    }
+
+    private var ticketTexts: [String] {
+        model.ticket.detailTranslationTexts
     }
 
     @MainActor
@@ -183,11 +192,11 @@ private struct TicketDetailSummary: View {
 
             VStack(alignment: .leading, spacing: 10) {
                 StatusLabel(status: ticket.status)
-                Text(translation.text(at: 1, original: ticket.description))
+                Text(translation.text(at: 1, original: ticket.description, texts: translatableTexts))
                     .font(.body)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 if let note = ticket.implementationNote {
-                    Label(translation.text(at: 2, original: note), systemImage: "checkmark.seal")
+                    Label(translation.text(at: 2, original: note, texts: translatableTexts), systemImage: "checkmark.seal")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -206,7 +215,7 @@ private struct TicketDetailSummary: View {
     }
 
     private var translatableTexts: [String] {
-        [ticket.title, ticket.description] + (ticket.implementationNote.map { [$0] } ?? [])
+        ticket.detailTranslationTexts
     }
 }
 
@@ -426,7 +435,7 @@ private struct CommentBubble: View {
     private var displayedBody: String {
         comment.isHidden
             ? String(localized: "Message removed", bundle: .module)
-            : translation.text(at: 0, original: originalBody)
+            : translation.text(at: 0, original: originalBody, texts: translatableTexts)
     }
     private var bubbleColor: Color {
         if comment.isHidden { return BuildThisPleaseSurface.field }
