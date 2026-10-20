@@ -22,7 +22,7 @@ No end-user login is required. BuildThisPlease creates an installation identity,
 - iOS 18 or newer (minimum supported version)
 - A physical App Attest-capable device for live integration testing
 
-Rodrigo confirmed iOS 18 as the minimum supported version on October 20, 2026. The current [package manifest](Package.swift) still declares `.iOS(.v17)`, and the [example configuration](Examples/BuildThisPleaseExample/Configuration/Example.xcconfig) and [UI test deployment targets](Examples/BuildThisPleaseExample/BuildThisPleaseExample.xcodeproj/project.pbxproj) still declare `17.0`. Those build settings remain an implementation mismatch pending separate code/configuration work; this documentation update does not change them or establish iOS 17 support.
+Rodrigo confirmed iOS 18 as the minimum supported version on October 20, 2026. The [package manifest](Package.swift), [example configuration](Examples/BuildThisPleaseExample/Configuration/Example.xcconfig), and [UI test deployment targets](Examples/BuildThisPleaseExample/BuildThisPleaseExample.xcodeproj/project.pbxproj) enforce this minimum.
 
 ## 1. Create the hosted project
 
