@@ -1,6 +1,6 @@
 # BuildThisPlease SDK
 
-BuildThisPlease is a hosted feature-request board for Apple apps. This public Swift package provides the iOS client, localized SwiftUI interface, App Attest integration, tests, privacy manifest, and a tiny example app. The Worker, administrator dashboard, database, production configuration, and customer data remain private.
+BuildThisPlease is a hosted feature-request board for iOS and Android apps. This public Swift package provides the iOS client, localized SwiftUI interface, App Attest integration, tests, privacy manifest, and a tiny example app. Android integration uses the separate [Android SDK](https://github.com/rosday/BuildThisPleaseAndroidSDK). The Worker, administrator dashboard, database, production configuration, and customer data remain private.
 
 ## What app users can do
 
@@ -19,8 +19,10 @@ No end-user login is required. BuildThisPlease creates an installation identity,
 
 - Xcode 26 or newer
 - Swift 6.2 or newer
-- iOS 17 or newer
+- iOS 18 or newer (minimum supported version)
 - A physical App Attest-capable device for live integration testing
+
+Rodrigo confirmed iOS 18 as the minimum supported version on October 20, 2026. The current [package manifest](Package.swift) still declares `.iOS(.v17)`, and the [example configuration](Examples/BuildThisPleaseExample/Configuration/Example.xcconfig) and [UI test deployment targets](Examples/BuildThisPleaseExample/BuildThisPleaseExample.xcodeproj/project.pbxproj) still declare `17.0`. Those build settings remain an implementation mismatch pending separate code/configuration work; this documentation update does not change them or establish iOS 17 support.
 
 ## 1. Create the hosted project
 

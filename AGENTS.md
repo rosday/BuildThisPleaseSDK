@@ -40,6 +40,7 @@ Never bypass the setup draft by creating a project with another tool. Never infe
 
 ## Integration rules
 
+- Follow the iOS 18 minimum support policy. The package and example still declare iOS 17 deployment settings; see [Requirements](README.md#requirements) for the documented implementation mismatch. Do not infer iOS 17 support from those settings.
 - Add `https://github.com/rosday/BuildThisPleaseSDK` using a semantic version tag.
 - Prefer the aggregate `BuildThisPlease` product unless the app intentionally needs only Core or UI.
 - Create one long-lived `BuildThisPleaseClient` per project. Never instantiate it in `body` or on every navigation.
