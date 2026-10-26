@@ -77,3 +77,5 @@ xcodebuild \
 For host-app integration, also build the affected Debug scheme. When a connected test device is available and the user requests it, install and launch it there. A successful Simulator build does not verify App Attest.
 
 Before declaring production readiness, confirm the checklist in `Documentation/Integration.md` and test the live flow on a physical device.
+
+For issue creation or maintenance in this repository, follow the [app-owned checklist](https://github.com/rosday/build-this-please-brain/blob/main/Workflows/Development.md#create-and-maintain-issues). It defines owning Project, assignee, actual-state Status, target Version, start/completion checks and saved-field readback. Existing technical and action-specific approval instructions still apply; private company Brain access is not required.
